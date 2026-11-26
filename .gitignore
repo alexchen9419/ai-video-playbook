@@ -1,0 +1,15 @@
+# 虛擬環境與快取
+.venv/
+__pycache__/
+*.pyc
+# 可重建的輸出（make_anim.py / assemble.py / qa.py 產生）
+**/build/
+**/成品/
+**/frames_*/
+**/prev_*.png
+**/story.timed.json
+**/a4_1080.mp4
+# 系統檔
+.DS_Store
+Thumbs.db
+desktop.ini

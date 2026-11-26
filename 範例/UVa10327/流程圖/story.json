@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "title": "UVa 10327 程式流程回顧",
+  "locale": "zh-TW",
+  "theme": "light",
+  "views": [ { "id": "prog", "type": "workflow", "input": "program.workflow.json" } ],
+  "steps": [
+    { "view": "prog", "title": "讀入與每組測資", "body": "一次讀完所有數字；只要還有資料，就讀進 n 和 n 個數。",
+      "focus": ["read", "check", "readcase"], "trace": { "edges": ["e-read-check", "e-check-readcase"], "action": "trace" } },
+    { "view": "prog", "title": "雙層迴圈數逆序對", "body": "每一對 i < j 檢查 ai > a[j]，是就 cnt 加一。",
+      "focus": ["outer", "inner", "compare", "inc", "nextj"], "trace": { "edges": ["e-readcase-outer", "e-outer-inner", "e-inner-compare", "e-compare-inc", "e-inc-nextj", "e-nextj-inner"], "action": "trace" } },
+    { "view": "prog", "title": "記錄答案、下一組", "body": "迴圈結束記下答案，回頭處理下一組；沒有資料就一起印出。",
+      "focus": ["append", "check", "print"], "trace": { "edges": ["e-inner-outer", "e-outer-append", "e-append-check", "e-check-print"], "action": "trace" } }
+  ]
+}

@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+動畫範本。合約（make_anim.py 依此呼叫，不可改）：
+  1. 網址參數 ?scene=<段落id>&cues=<JSON 陣列 [[開始秒,結束秒], ...]>，第 k 組是第 k 句旁白的說話區間。
+  2. 全域函式 window.setT(t)：把畫面畫成第 t 秒的樣子。必須是「純函式」——同一個 t 永遠畫出同一張圖，
+     不能用 setTimeout、CSS transition/animation、Date.now()、Math.random()（要亂數就用固定種子）。
+  3. 畫面固定 1280×720，背景不透明。字型用本機檔案（@font-face url(file:///...)），不要連網路。
+做法：每個 scene 是一個 { build(), draw(t) }；build 建立 DOM，draw 依 t 與 CUES 設定透明度／位置。
+動畫重點跟著旁白走：第 k 句講到什麼，就在 S(k).s 附近讓它出現、在講的期間反白。
+-->
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:TC;src:url("file:///C:/Windows/Fonts/NotoSansTC-VF.ttf"),url("file:///C:/Windows/Fonts/msjh.ttc");}
+html,body{margin:0;width:1280px;height:720px;overflow:hidden;background:#f6f4ee;font-family:TC,sans-serif;color:#1f2937}
+.abs{position:absolute}
+.title{font-size:56px;font-weight:800}
+.sub{font-size:28px;color:#6b7280;font-weight:600}
+.bul{font-size:36px;font-weight:600;line-height:1.5;padding:6px 18px;border-radius:12px}
+.bul.hl{background:#fef3c7}
+.bul b{color:#dc2626}
+</style></head><body>
+<div id="root"></div>
+<script>
+const Q=new URLSearchParams(location.search);
+const SCENE=Q.get('scene')||'demo';
+const CUES=JSON.parse(Q.get('cues')||'[[0.8,4],[4.5,8],[8.5,12]]');
+const R=document.getElementById('root');
+// ---- 共用小工具 ----
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ez=x=>{x=cl(x);return x*x*(3-2*x)};                 // smoothstep
+const pr=(t,a,b)=>ez((t-a)/(b-a));                         // t 在 a→b 之間的進度 0..1
+function el(tag,cls,html,par){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;(par||R).appendChild(e);return e}
+function at(e,x,y){e.style.left=x+'px';e.style.top=y+'px';return e}
+function op(e,v){e.style.opacity=v;e.style.visibility=v<=0.001?'hidden':'visible'}
+function rise(e,t,t0,d=0.5,dy=24){const p=pr(t,t0,t0+d);op(e,p);e.style.transform=`translateY(${(1-p)*dy}px)`}
+function S(k){const c=CUES[Math.min(k,CUES.length-1)];return {s:c[0],e:c[1],f:x=>c[0]+x*(c[1]-c[0])}}  // 第 k 句；f(0.5)=講到一半
+const speaking=(t,k)=>t>=S(k).s-0.1&&t<=S(k).e+0.2;
+
+// ---- 場景 ----
+const SCENES={
+  demo:{
+    build(){
+      this.t=at(el('div','abs title','標題放這裡'),80,70);
+      this.s=at(el('div','abs sub','副標：一句話說明這段要講什麼'),84,150);
+      this.b=['第一句旁白講的<b>重點</b>','第二句旁白講的重點','第三句旁白講的重點']
+        .map((h,i)=>at(el('div','abs bul',h),80,250+i*100));
+    },
+    draw(t){
+      rise(this.t,t,0,0.6); rise(this.s,t,0.3,0.6);
+      this.b.forEach((e,k)=>{
+        if(k>=CUES.length){op(e,0);return}          // 旁白句數比條列少：多的條列不顯示
+        rise(e,t,S(k).s-0.2); e.classList.toggle('hl',speaking(t,k))});
+    }
+  },
+};
+const sc=SCENES[SCENE]; sc.build();
+window.setT=t=>sc.draw(t);
+setT(0);
+</script></body></html>

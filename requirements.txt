@@ -1,0 +1,5 @@
+# 已驗證版本（2026-11，Python 3.11）；用 >= 讓新版也能裝
+numpy>=2.0
+imageio-ffmpeg>=0.5      # 內附 ffmpeg 執行檔，不用另外安裝 ffmpeg
+playwright>=1.40         # 動畫逐格截圖
+opencv-python>=4.8       # 只有 工具/合成/（手機畫面合成）需要

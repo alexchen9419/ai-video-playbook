@@ -1,0 +1,257 @@
+{
+ "schema_version": 2,
+ "diagram_type": "workflow",
+ "meta": {
+  "title": "UVa 10327 Flip Sort 程式流程",
+  "locale": "zh-TW",
+  "quality_profile": "showcase",
+  "output": ".archify/workflow-uva10327-program-20261125-201755/uva10327-program.html",
+  "legend": {
+   "entries": {
+    "frontend": {
+     "label": "輸入／輸出"
+    },
+    "backend": {
+     "label": "處理步驟"
+    },
+    "security": {
+     "label": "條件判斷"
+    },
+    "messagebus": {
+     "label": "迴圈"
+    }
+   }
+  }
+ },
+ "lanes": [
+  {
+   "id": "end",
+   "label": "結束"
+  },
+  {
+   "id": "cases",
+   "label": "每組測資"
+  },
+  {
+   "id": "loops",
+   "label": "雙層迴圈"
+  },
+  {
+   "id": "judge",
+   "label": "逆序判斷"
+  }
+ ],
+ "phases": [
+  {
+   "id": "p-read",
+   "label": "讀入",
+   "fromCol": 0,
+   "toCol": 1
+  },
+  {
+   "id": "p-count",
+   "label": "數逆序對 O(N²)",
+   "fromCol": 2,
+   "toCol": 4,
+   "variant": "emphasis"
+  }
+ ],
+ "mainPath": [
+  "read",
+  "check",
+  "readcase",
+  "outer",
+  "inner",
+  "compare",
+  "inc",
+  "nextj"
+ ],
+ "nodes": [
+  {
+   "id": "read",
+   "lane": "cases",
+   "col": 0,
+   "type": "frontend",
+   "label": "讀入全部 token",
+   "sublabel": "stdin.read().split()",
+   "explanation": "data = sys.stdin.read().split()；pos = 0；out = []。一次讀完，換行格式不影響。"
+  },
+  {
+   "id": "check",
+   "lane": "cases",
+   "col": 1,
+   "type": "security",
+   "label": "還有資料？",
+   "sublabel": "pos < len(data)"
+  },
+  {
+   "id": "readcase",
+   "lane": "cases",
+   "col": 2,
+   "type": "backend",
+   "label": "讀 n 與 n 個數",
+   "sublabel": "a = data[pos:pos+n]",
+   "explanation": "n = int(data[pos])；a = list(map(int, data[pos+1:pos+1+n]))；pos 前移 n+1。"
+  },
+  {
+   "id": "outer",
+   "lane": "loops",
+   "col": 2,
+   "type": "messagebus",
+   "label": "for i",
+   "sublabel": "ai = a[i]"
+  },
+  {
+   "id": "inner",
+   "lane": "loops",
+   "col": 3,
+   "type": "messagebus",
+   "label": "for j > i",
+   "sublabel": "j = i+1 … n−1"
+  },
+  {
+   "id": "nextj",
+   "lane": "loops",
+   "col": 4,
+   "type": "backend",
+   "label": "下一個 j"
+  },
+  {
+   "id": "compare",
+   "lane": "judge",
+   "col": 3,
+   "type": "security",
+   "label": "ai > a[j]？",
+   "sublabel": "前大後小",
+   "tag": "相等不算",
+   "explanation": "用嚴格大於：相等的兩個數不必交換，用 >= 會多算。"
+  },
+  {
+   "id": "inc",
+   "lane": "judge",
+   "col": 4,
+   "type": "backend",
+   "label": "cnt += 1",
+   "sublabel": "找到一個逆序對"
+  },
+  {
+   "id": "append",
+   "lane": "loops",
+   "col": 1,
+   "type": "backend",
+   "label": "記下答案",
+   "sublabel": "Minimum exchange…"
+  },
+  {
+   "id": "print",
+   "lane": "end",
+   "col": 1,
+   "type": "frontend",
+   "label": "印出所有答案",
+   "sublabel": "\"\\n\".join(out)"
+  }
+ ],
+ "edges": [
+  {
+   "id": "e-read-check",
+   "from": "read",
+   "to": "check"
+  },
+  {
+   "id": "e-check-readcase",
+   "from": "check",
+   "to": "readcase",
+   "label": "是",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e-readcase-outer",
+   "from": "readcase",
+   "to": "outer",
+   "label": "cnt = 0"
+  },
+  {
+   "id": "e-outer-inner",
+   "from": "outer",
+   "to": "inner"
+  },
+  {
+   "id": "e-inner-compare",
+   "from": "inner",
+   "to": "compare",
+   "label": "取 a[j]"
+  },
+  {
+   "id": "e-compare-inc",
+   "from": "compare",
+   "to": "inc",
+   "label": "是",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e-inc-nextj",
+   "from": "inc",
+   "to": "nextj"
+  },
+  {
+   "id": "e-compare-nextj",
+   "from": "compare",
+   "to": "nextj",
+   "label": "否",
+   "role": "branch",
+   "variant": "dashed"
+  },
+  {
+   "id": "e-nextj-inner",
+   "from": "nextj",
+   "to": "inner",
+   "label": "繼續",
+   "role": "return"
+  },
+  {
+   "id": "e-inner-outer",
+   "from": "inner",
+   "to": "outer",
+   "label": "j 走完",
+   "role": "return"
+  },
+  {
+   "id": "e-outer-append",
+   "from": "outer",
+   "to": "append",
+   "label": "i 走完"
+  },
+  {
+   "id": "e-append-check",
+   "from": "append",
+   "to": "check",
+   "label": "下一組",
+   "role": "return"
+  },
+  {
+   "id": "e-check-print",
+   "from": "check",
+   "to": "print",
+   "label": "否",
+   "variant": "dashed"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "為什麼答案是逆序對數",
+   "items": [
+    "相鄰交換只改變那兩個數的前後關係",
+    "每換一次逆序對恰好 ±1，排好時為 0"
+   ]
+  },
+  {
+   "dot": "amber",
+   "title": "複雜度",
+   "items": [
+    "N ≤ 1000：約 N(N−1)/2 ≈ 50 萬次比較",
+    "N 更大時改用合併排序數逆序對 O(N log N)"
+   ]
+  }
+ ]
+}

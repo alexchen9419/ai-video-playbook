@@ -1,0 +1,27 @@
+{
+ "name": "影片名稱",
+ "fps": 24,
+ "size": [1280, 720],
+ "target_seconds": 120,
+ "tolerance_seconds": 10,
+ "anim_html": "動畫/anim.html",
+ "build_dir": "build",
+ "output_dir": "成品",
+ "browser_channel": null,
+ "subtitle": {"max_chars": 22, "font_name": "Microsoft JhengHei", "font_file": "C:/Windows/Fonts/msjhbd.ttc", "font_size": 17, "margin_v": 14},
+ "loudnorm": "I=-16:TP=-1.5:LRA=11",
+ "segments": [
+  {"id": "F1", "type": "video", "src": "影片/F1.mp4", "text": "大家好！今天這題叫 Flip Sort，只能交換相鄰的兩個數。"},
+  {"id": "a1", "type": "anim", "scene": "a1", "lead": 0.8, "gap": 0.5, "tail": 1.0,
+   "lines": [
+    {"wav": "語音/講師_A1_1.wav", "text": "題目給你 N 個整數，每次只能交換相鄰的兩個數。"},
+    {"wav": "語音/講師_A1_2.wav", "text": "例如 2、3、1：先把 3 和 1 交換，再把 2 和 1 交換，總共兩次。"}
+   ]},
+  {"id": "F2", "type": "video", "src": "影片/F2.mp4", "text": "台詞被 Flow 唸錯時，改用配音：", "dub": "語音/講師_F2.wav", "dub_delay": 0.7},
+  {"id": "F3", "type": "video", "src": "影片/F3.mp4", "text": "說話偵測不準時手動指定區間", "speech": [0.9, 6.8]},
+  {"id": "card", "type": "clip", "src": "後製/字卡_隔天下午.mp4"},
+  {"id": "a4", "type": "anim", "renderer": "command", "command": "python 流程圖/build.py {dur} \"{cues_json}\" \"{out}\"",
+   "lines": [{"wav": "語音/講師_A4_1.wav", "text": "自訂渲染器：指令收到總長、cues、輸出路徑，產生無聲影片即可。"}]},
+  {"id": "end", "type": "clip", "src": "後製/片尾.mp4", "lines": [{"at": [0.5, 3.0], "text": "已做好的片段也能指定字幕時間"}]}
+ ]
+}
