@@ -44,7 +44,7 @@
     "sound": "旁白（TTS）",
     "post": "取代 Flow 講師出鏡",
     "transition": "硬切",
-    "status": "OK，TTS 未試聽"
+    "status": "OK，TTS 已試聽"
    }
   },
   {
@@ -78,7 +78,7 @@
     "action": "米白底；標題「UVa 10327 Flip Sort」",
     "sound": "旁白（講師語音）",
     "post": "底部 90 px 留給字幕",
-    "status": "OK，TTS 未試聽"
+    "status": "OK，TTS 已試聽"
    }
   },
   {
@@ -102,7 +102,7 @@
     "sound": "旁白（TTS）",
     "post": "取代 Flow 講師出鏡",
     "transition": "硬切",
-    "status": "OK，TTS 未試聽"
+    "status": "OK，TTS 已試聽"
    }
   },
   {
@@ -152,7 +152,7 @@
     "action": "標題「逆序對 Inversion」＋定義 i<j 且 a[i]>a[j]",
     "sound": "旁白",
     "post": "說明文字放在方塊下方，避開字幕區",
-    "status": "OK，TTS 未試聽"
+    "status": "OK，TTS 已試聽"
    }
   },
   {
@@ -176,7 +176,7 @@
     "sound": "旁白（TTS）",
     "post": "取代 Flow 講師出鏡",
     "transition": "硬切",
-    "status": "OK，TTS 未試聽"
+    "status": "OK，TTS 已試聽"
    }
   },
   {
@@ -227,7 +227,7 @@
     "action": "左：深色程式碼面板（19 px）；右：變數小框",
     "sound": "旁白",
     "post": "程式碼面板高度縮到 556 px，避開字幕",
-    "status": "OK，TTS 未試聽"
+    "status": "OK，TTS 已試聽"
    }
   },
   {
@@ -251,7 +251,7 @@
     "sound": "旁白（TTS）",
     "post": "取代 Flow 講師出鏡",
     "transition": "硬切",
-    "status": "OK，TTS 未試聽"
+    "status": "OK，TTS 已試聽"
    }
   }
  ],

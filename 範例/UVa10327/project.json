@@ -34,7 +34,7 @@
     "sound": "安靜教室環境音，無音樂",
     "post": "**白板上不能有字**；字幕後製",
     "transition": "硬切",
-    "status": "影片 OK，未試聽"
+    "status": "影片 OK，已試聽"
    }
   },
   {
@@ -86,7 +86,7 @@
     "sound": "安靜教室環境音",
     "post": "手指方向接下一段 A2 的畫面",
     "transition": "硬切",
-    "status": "影片 OK，未試聽"
+    "status": "影片 OK，已試聽"
    }
   },
   {
@@ -154,7 +154,7 @@
     "sound": "安靜教室環境音",
     "post": "",
     "transition": "硬切",
-    "status": "影片 OK，未試聽"
+    "status": "影片 OK，已試聽"
    }
   },
   {
@@ -271,7 +271,7 @@
     "sound": "安靜教室環境音",
     "post": "可接片尾字卡",
     "transition": "淡出",
-    "status": "影片 OK，未試聽"
+    "status": "影片 OK，已試聽"
    }
   }
  ],
