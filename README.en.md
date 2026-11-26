@@ -20,7 +20,7 @@ Every decision is written down as a rule, template, numeric threshold or checkli
 | `範本/` | Templates: script (`腳本範本.md`), storyboard (`分鏡表範本.md`), `project_範本.json`, `anim_template.html` |
 | `範例/UVa10327/` | Full example with Flow presenter shots (assets included, rebuilds the finished video) |
 | `範例/純動畫_UVa10327/` | Same topic, animation-only (no Flow, TTS narration) |
-| `docs/總流程.*` | Overall pipeline diagram (SVG, interactive HTML, Archify source JSON) |
+| `docs/overall-pipeline.*`, `docs/總流程.*` | Overall pipeline diagram in English / Chinese (SVG, interactive HTML, Archify source JSON) |
 | `腳本.md` / `分鏡表.pdf` / `語音/` / `影片/` / `動畫/` / `成品/` | script / storyboard / narration audio / video clips / animation / final output |
 
 ## Quick start
@@ -40,9 +40,13 @@ Requirements: Python 3.10+ (`requirements.txt`: numpy, imageio-ffmpeg — ships 
 
 ## Overall pipeline
 
-![Overall pipeline](docs/總流程.svg)
+![Overall pipeline](docs/overall-pipeline.svg)
 
-Interactive version: [docs/總流程.html](docs/總流程.html). Labels in the diagram: script + storyboard → user confirmation → (branch) Flow live-action shots → screen compositing; narration → code animation → assemble + subtitles → acceptance → delivery. When acceptance fails, redo only the broken segment (dashed line).
+Interactive version (click nodes for details, light/dark theme): [docs/overall-pipeline.html](docs/overall-pipeline.html) — download and open in a browser. Drawn with [Archify](https://github.com/tt-a1i/archify) from [docs/overall-pipeline.workflow.json](docs/overall-pipeline.workflow.json) (Chinese version: `docs/總流程.*`).
+
+- **Flow route**: after user approval the work splits into live-action shots (Flow, costs credits) and narration + code animation (free); `assemble.py` joins them.
+- **Animation-only route** (05): skip the "Live-action shots" lane; everything else is the same.
+- When acceptance fails, redo only the broken segment (dashed line) — never regenerate the whole film.
 
 ## The most important rule: division of labour
 
