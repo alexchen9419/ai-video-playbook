@@ -107,3 +107,7 @@ git 顯示中文檔名為亂碼時：`git config core.quotepath false`。
 - 選用：Node.js＋Archify（流程圖動畫）。
 - Google Flow 帳號（付費方案，影片扣點；圖片與語音試聽不扣點）。
 - 路徑可以有中文，但 OpenCV 讀寫中文路徑要用 `np.fromfile`＋`cv2.imdecode`／`cv2.imencode(...).tofile`；Docker 掛載則先複製到純英文路徑。
+
+## 授權
+
+[MIT](LICENSE)。手冊、工具、範本與範例素材都可以自由使用、修改、再散布，保留版權聲明即可。
