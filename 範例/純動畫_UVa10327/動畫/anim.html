@@ -1,0 +1,250 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:NotoTC;src:url("file:///C:/Windows/Fonts/NotoSansTC-VF.ttf");}
+@font-face{font-family:Code;src:url("file:///C:/Windows/Fonts/CascadiaMono.ttf");}
+html,body{margin:0;width:1280px;height:720px;overflow:hidden;background:#f6f4ee;font-family:NotoTC,sans-serif;color:#1f2937}
+.abs{position:absolute}
+.g{position:absolute;left:0;top:0;width:1280px;height:720px}
+.title{font-size:52px;font-weight:800;letter-spacing:1px}
+.tag{display:inline-block;background:#1f2937;color:#fff;font-size:22px;font-weight:700;padding:4px 14px;border-radius:8px;margin-right:16px;vertical-align:middle}
+.bul{font-size:34px;font-weight:600;line-height:1.4}
+.bul b{color:#dc2626}
+.box{position:absolute;width:110px;height:110px;margin-left:-55px;margin-top:-55px;border-radius:18px;background:#fff;border:5px solid #2563eb;
+ display:flex;align-items:center;justify-content:center;font:700 56px Code;color:#1f2937;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+.box.hot{border-color:#f59e0b;background:#fffbeb}
+.box.gray{border-color:#9ca3af;color:#6b7280}
+.box.done{border-color:#16a34a;background:#f0fdf4}
+.cap{font-size:34px;font-weight:700;text-align:center;width:1280px}
+.badge{font-size:30px;font-weight:800;padding:10px 24px;border-radius:14px;background:#1f2937;color:#fff}
+.code{position:absolute;left:40px;top:62px;width:720px;height:556px;background:#1e1e2e;border-radius:16px;padding:18px 0;box-sizing:border-box}
+.ln{font:19px/27px Code;color:#cdd6f4;white-space:pre;padding-left:58px;position:relative;height:27px}
+.ln i{position:absolute;left:14px;width:30px;text-align:right;color:#6c7086;font-style:normal}
+.ln.hl{background:rgba(250,204,21,.22)}
+.kw{color:#cba6f7}.fn{color:#89b4fa}.st{color:#a6e3a1}.nu{color:#fab387}.op{color:#f38ba8}
+.panel{position:absolute;left:800px;top:70px;width:440px;height:600px}
+.chip{display:inline-block;font:700 26px Code;background:#fff;border:3px solid #2563eb;border-radius:10px;padding:2px 12px;margin:5px}
+.mono{font-family:Code}
+</style></head><body>
+<div id="root"></div>
+<script>
+const Q=new URLSearchParams(location.search);
+const SCENE=Q.get('scene')||'a1';
+const CUES=JSON.parse(Q.get('cues')||'null');
+const R=document.getElementById('root');
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ez=x=>{x=cl(x);return x*x*(3-2*x)};
+const pr=(t,a,b)=>ez((t-a)/(b-a));
+function el(tag,cls,html,par){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;(par||R).appendChild(e);return e}
+function at(e,x,y){e.style.left=x+'px';e.style.top=y+'px';return e}
+function op(e,v){e.style.opacity=v;e.style.visibility=v<=0.001?'hidden':'visible'}
+function rise(e,t,t0,d=0.5,dy=24){const p=pr(t,t0,t0+d);op(e,p);e.style.transform=`translateY(${(1-p)*dy}px)`}
+// segment helper: seg k -> [s,e,len]
+function S(k){const c=CUES[k];return {s:c[0],e:c[1],L:c[1]-c[0],f:x=>c[0]+x*(c[1]-c[0])}}
+
+// ---------- array with swaps ----------
+function Arr(par,vals,cx,cy,gap,cls){
+  this.vals=vals;this.cx=cx;this.cy=cy;this.gap=gap;
+  this.b=vals.map(v=>el('div','box '+(cls||''),String(v),par));
+}
+Arr.prototype.xOf=function(p){return this.cx+(p-(this.vals.length-1)/2)*this.gap};
+// swaps:[[time,k]], returns positions (float index) per item
+Arr.prototype.draw=function(t,swaps,D=0.7){
+  const n=this.vals.length;let order=[...Array(n).keys()];const pos=order.map(i=>i),y=order.map(()=>0);let hot=[];
+  for(const [ts,k] of swaps){
+    if(t>=ts+D){[order[k],order[k+1]]=[order[k+1],order[k]];continue}
+    if(t>ts){const p=ez((t-ts)/D),a=order[k],b=order[k+1];
+      order.forEach((id,i)=>pos[id]=i);pos[a]=k+p;pos[b]=k+1-p;y[a]=-Math.sin(Math.PI*p)*70;y[b]=Math.sin(Math.PI*p)*70;hot=[a,b];
+      this.apply(pos,y,hot);return pos}
+    break;
+  }
+  order.forEach((id,i)=>pos[id]=i);this.apply(pos,y,hot);return pos;
+};
+Arr.prototype.apply=function(pos,y,hot){this.b.forEach((e,i)=>{at(e,this.xOf(pos[i]),this.cy+y[i]);e.classList.toggle('hot',hot.includes(i))})};
+Arr.prototype.sorted=function(pos){const o=[...pos.keys()].sort((a,b)=>pos[a]-pos[b]).map(i=>this.vals[i]);return o.every((v,i)=>i==0||o[i-1]<=v)};
+
+// arcs svg for inversions
+function Arcs(par){this.svg=document.createElementNS('http://www.w3.org/2000/svg','svg');this.svg.setAttribute('width',1280);this.svg.setAttribute('height',720);
+  this.svg.style.cssText='position:absolute;left:0;top:0';par.appendChild(this.svg)}
+Arcs.prototype.draw=function(arr,pos,reveal){ // reveal(i,j)->0..1
+  this.svg.innerHTML='';let n=0;
+  for(let i=0;i<arr.vals.length;i++)for(let j=0;j<arr.vals.length;j++){
+    if(!(pos[i]<pos[j]&&arr.vals[i]>arr.vals[j]))continue;
+    const r=reveal(i,j);if(r<=0)continue;n+=r>=1?1:0;
+    const x1=arr.xOf(pos[i]),x2=arr.xOf(pos[j]),y=arr.cy-62,h=40+Math.abs(x2-x1)*0.28;
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',`M${x1} ${y} C ${x1} ${y-h}, ${x2} ${y-h}, ${x2} ${y}`);
+    p.setAttribute('fill','none');p.setAttribute('stroke','#dc2626');p.setAttribute('stroke-width',6);p.setAttribute('stroke-linecap','round');
+    p.setAttribute('pathLength',1);p.setAttribute('stroke-dasharray',1);p.setAttribute('stroke-dashoffset',1-r);
+    this.svg.appendChild(p);
+  }
+  return n;
+};
+function invCount(arr,pos){let n=0;for(let i=0;i<arr.vals.length;i++)for(let j=0;j<arr.vals.length;j++)if(pos[i]<pos[j]&&arr.vals[i]>arr.vals[j])n++;return n}
+
+// ================= A1 =================
+const scenes={};
+scenes.a1=()=>{
+  const T=el('div','abs title','<span class="tag">CPE 考古題</span>UVa 10327　Flip Sort');at(T,80,60);
+  const B=el('div','g');
+  const bl=['輸入 N 個整數（N ≤ 1000）','每次只能交換<b>相鄰</b>的兩個數','求排成遞增的<b>最少</b>交換次數'].map((s,i)=>at(el('div','abs bul','• '+s,B),120,200+i*80));
+  const G=el('div','g');const A=new Arr(G,[2,3,1],640,380,160);
+  const cnt=at(el('div','abs cap','',G),0,520);
+  return t=>{
+    const a=S(0),b=S(1);
+    rise(T,t,0,0.6);
+    bl.forEach((e,i)=>rise(e,t,a.f(0.03+i*0.27),0.5));
+    op(B,1-pr(t,b.s-0.4,b.s));
+    op(G,pr(t,b.s-0.2,b.s+0.3));
+    const sw=[[b.f(0.30),1],[b.f(0.62),0]];
+    const pos=A.draw(t,sw);
+    const k=sw.filter(s=>t>=s[0]+0.7).length;
+    const ok=A.sorted(pos)&&k==2;
+    A.b.forEach(e=>e.classList.toggle('done',ok));
+    cnt.innerHTML=`交換次數：<span class="mono" style="color:#dc2626;font-size:48px">${k}</span>`+(ok?'　<span style="color:#16a34a">排好了 ✓</span>':'');
+  };
+};
+
+// ================= A2 =================
+scenes.a2=()=>{
+  const T=at(el('div','abs title','逆序對 Inversion',null),80,50);T.style.fontSize='44px';
+  const def=at(el('div','abs bul','i &lt; j 且 a[i] &gt; a[j]　→　前大後小的一對'),80,120);def.style.fontSize='30px';def.style.color='#4b5563';
+  // group 231
+  const G1=el('div','g');const arcs=new Arcs(G1);const A=new Arr(G1,[2,3,1],640,400,170);
+  const c1=at(el('div','abs cap','',G1),0,500);
+  const note=at(el('div','abs cap','',G1),0,560);note.style.color='#2563eb';
+  // generic group
+  const G2=el('div','g');const X=new Arr(G2,['x','a','b','y'],640,380,170);X.b[0].classList.add('gray');X.b[3].classList.add('gray');
+  const g2c1=at(el('div','abs cap','只有 <span style="color:#d97706">a、b</span> 兩個的前後關係改變',G2),0,500);
+  const g2c2=at(el('div','abs cap','x 還是在它們前面，y 還是在後面 → 其他關係都不變',G2),0,550);g2c2.style.color='#4b5563';g2c2.style.fontSize='28px';
+  // group 1324
+  const G3=el('div','g');const C=new Arr(G3,[1,3,2,4],640,400,160);
+  const g3c=at(el('div','abs cap','',G3),0,500);
+  const fin=at(el('div','abs badge','最少交換次數　＝　逆序對數量'),0,570);fin.style.left='50%';fin.style.fontSize='38px';
+  return t=>{
+    const a=S(0),b=S(1),c=S(2),d=S(3);
+    rise(T,t,0,0.5);rise(def,t,0.3,0.5);
+    op(G1,Math.min(pr(t,-1,0),1-pr(t,b.s-0.3,b.s))+pr(t,c.s-0.3,c.s)*(1-pr(t,d.s-0.3,d.s)));
+    op(G2,pr(t,b.s-0.3,b.s)*(1-pr(t,c.s-0.3,c.s)));
+    op(G3,pr(t,d.s-0.3,d.s));
+    // G1
+    const sw=[[c.f(0.18),1],[c.f(0.45),0]];
+    const pos=A.draw(t,t<c.s-0.3?[]:sw);
+    const rv=(i,j)=>t>=c.s-0.3?1:pr(t,a.f(i==0?0.30:0.50),a.f(i==0?0.30:0.50)+0.6);
+    arcs.draw(A,pos,rv);
+    const shown=t>=c.s-0.3?invCount(A,pos):[[0,0.3],[1,0.5]].filter(([i,f])=>t>=a.f(f)+0.3).length;
+    const ok=shown==0;A.b.forEach(e=>e.classList.toggle('done',ok));
+    c1.innerHTML=`逆序對：<span class="mono" style="color:#dc2626;font-size:48px">${shown}</span>`+(t<c.s-0.3&&t>a.f(0.78)?'　＝　答案 2':'')+(ok?'　<span style="color:#16a34a">排好了 ✓</span>':'');
+    note.innerHTML=t>=c.s-0.3?'每換一次相鄰的數，逆序對只會 ±1':'';
+    // G2
+    X.draw(t,[[b.f(0.25),1]],0.9);
+    op(g2c1,pr(t,b.f(0.3),b.f(0.3)+0.4));op(g2c2,pr(t,b.f(0.55),b.f(0.55)+0.4));
+    // G3
+    const p3=C.draw(t,[[d.f(0.62),1]]);
+    const hot=t>d.f(0.2)&&t<d.f(0.62);C.b[1].classList.toggle('hot',hot||C.b[1].classList.contains('hot'));C.b[2].classList.toggle('hot',hot||C.b[2].classList.contains('hot'));
+    const done3=t>=d.f(0.62)+0.7;C.b.forEach(e=>e.classList.toggle('done',done3));
+    g3c.innerHTML=t<d.f(0.2)?'還沒排好的數列……':(done3?'換掉它，逆序對就少一個 ✓':'一定找得到相鄰的「<span style="color:#dc2626">前大後小</span>」');
+    rise(fin,t,d.f(0.85),0.5);fin.style.transform+=' translateX(-50%)';
+  };
+};
+
+// ================= A3 =================
+const CODE=[
+ '<span class="kw">import</span> sys','',
+ 'data = sys.stdin.<span class="fn">read</span>().<span class="fn">split</span>()',
+ 'pos = <span class="nu">0</span>','out = []',
+ '<span class="kw">while</span> pos &lt; <span class="fn">len</span>(data):',
+ '    n = <span class="fn">int</span>(data[pos])','    pos += <span class="nu">1</span>',
+ '    a = data[pos:pos + n]','    a = <span class="fn">list</span>(<span class="fn">map</span>(<span class="fn">int</span>, a))','    pos += n',
+ '    cnt = <span class="nu">0</span>',
+ '    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):',
+ '        ai = a[i]',
+ '        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(i + <span class="nu">1</span>, n):',
+ '            <span class="kw">if</span> ai <span id="gt" class="op">&gt;</span> a[j]:',
+ '                cnt += <span class="nu">1</span>',
+ '    out.<span class="fn">append</span>(<span class="st">"Minimum exchange operations : %d"</span> % cnt)',
+ '<span class="fn">print</span>(<span class="st">"\\n"</span>.<span class="fn">join</span>(out))'];
+scenes.a3=()=>{
+  const T=at(el('div','abs','程式解說'),40,18);T.style.cssText+='font-size:30px;font-weight:800';
+  const cd=el('div','code');const L=CODE.map((s,i)=>el('div','ln',`<i>${i+1}</i>`+s,cd));
+  const gt=document.getElementById('gt');
+  const P=el('div','panel');
+  // p0 tokens
+  const P0=el('div','g',null,P);P0.style.cssText='position:absolute;left:0;top:0;width:440px';
+  const inp=el('div','',`<div style="font-size:24px;font-weight:700;color:#4b5563">輸入</div><pre class="mono" style="font-size:26px;margin:8px 0;background:#fff;border-radius:10px;padding:10px 16px;border:2px solid #d1d5db">3\n1 2 3\n3\n2 3 1</pre><div style="font-size:24px;font-weight:700;color:#4b5563;margin-top:18px">split() 之後</div>`,P0);
+  const chips=el('div','',null,P0);const toks=['3','1','2','3','3','2','3','1'].map(s=>el('span','chip',s,chips));
+  // p1 loops
+  const P1=el('div','',null,P);P1.style.cssText='position:absolute;left:0;top:0;width:440px;height:600px';
+  const A=new Arr(P1,[2,3,1],220,170,130);A.b.forEach(b=>{b.style.width=b.style.height='90px';b.style.marginLeft=b.style.marginTop='-45px';b.style.fontSize='46px'});
+  const pi=at(el('div','abs mono','i',P1),0,240),pj=at(el('div','abs mono','j',P1),0,240);
+  [pi,pj].forEach(e=>e.style.cssText+='font-size:34px;font-weight:700;width:40px;margin-left:-20px;text-align:center');pi.style.color='#2563eb';pj.style.color='#d97706';
+  const cmp=at(el('div','abs mono','',P1),0,320);cmp.style.cssText+='width:440px;text-align:center;font-size:30px;font-weight:700';
+  const cc=at(el('div','abs','',P1),0,390);cc.style.cssText+='width:440px;text-align:center;font-size:36px;font-weight:800';
+  // p2 equal
+  const P2=el('div','',null,P);P2.style.cssText='position:absolute;left:0;top:0;width:440px;height:600px';
+  const E=new Arr(P2,[2,2],220,170,150);E.draw(0,[]);
+  const e1=at(el('div','abs mono','2 &gt; 2 ？　否 → 不算',P2),0,280);e1.style.cssText+='width:440px;text-align:center;font-size:30px;font-weight:700;color:#16a34a';
+  const e2=at(el('div','abs mono','用 &gt;= 會多算一次 ✗',P2),0,340);e2.style.cssText+='width:440px;text-align:center;font-size:30px;font-weight:700;color:#dc2626';
+  const e3=at(el('div','abs','相等的數本來就不用交換',P2),0,410);e3.style.cssText+='width:440px;text-align:center;font-size:28px;color:#4b5563';
+  // p3 complexity
+  const P3=el('div','',null,P);P3.style.cssText='position:absolute;left:0;top:0;width:440px;height:600px';
+  const cx=['N ≤ 1000','比較次數 ≈ N(N−1)/2','≈ 500,000 次','雙層迴圈就能過 ✓'].map((s,i)=>{const e=at(el('div','abs',s,P3),0,70+i*80);e.style.cssText+=`width:440px;text-align:center;font-size:${i==3?36:32}px;font-weight:800;color:${i==3?'#16a34a':'#1f2937'}`;return e});
+  const outb=at(el('div','abs mono','Minimum exchange operations : 2',P3),0,440);outb.style.cssText+='width:440px;text-align:center;font-size:21px;background:#1e1e2e;color:#a6e3a1;border-radius:10px;padding:14px 0';
+  return t=>{
+    const a=S(0),b=S(1),c=S(2),d=S(3);
+    rise(T,t,0,0.4);op(cd,pr(t,0,0.4));
+    let hl=[];
+    if(t<b.s-0.2) hl=t<a.f(0.55)?[3]:[6];
+    else if(t<c.s-0.2) hl=t<b.f(0.28)?[7,8,9,10,11]:[13,14,15,16,17];
+    else if(t<d.s-0.2) hl=[16];
+    else hl=t<d.f(0.8)?[13,14,15,16,17]:[18,19];
+    L.forEach((e,i)=>e.classList.toggle('hl',hl.includes(i+1)));
+    const g=t>=c.s-0.2&&t<d.s-0.2;gt.style.outline=g?'3px solid #f38ba8':'none';gt.style.borderRadius='4px';gt.style.padding=g?'0 3px':'0';
+    const vis=[t<b.s-0.2,t>=b.s-0.2&&t<c.s-0.2,t>=c.s-0.2&&t<d.s-0.2,t>=d.s-0.2];
+    [P0,P1,P2,P3].forEach((p,i)=>{op(p,vis[i]?1:0)});
+    // p0
+    op(inp,pr(t,a.f(0.1),a.f(0.1)+0.4));toks.forEach((e,i)=>rise(e,t,a.f(0.35)+i*0.12,0.3,12));
+    // p1 steps
+    const st=[[b.f(0.35),0,1],[b.f(0.52),0,2],[b.f(0.69),1,2]];A.draw(0,[]);
+    let cur=null,cnt=0;for(const s of st){if(t>=s[0]){cur=s;}}
+    if(cur){cnt=st.filter(s=>t>=s[0]+0.35&&A.vals[s[1]]>A.vals[s[2]]).length}
+    op(pi,cur?1:0);op(pj,cur?1:0);
+    if(cur){at(pi,A.xOf(cur[1]),230);at(pj,A.xOf(cur[2]),230);const y=A.vals[cur[1]]>A.vals[cur[2]];
+      cmp.innerHTML=`${A.vals[cur[1]]} &gt; ${A.vals[cur[2]]} ？ <span style="color:${y?'#dc2626':'#6b7280'}">${y?'是 → cnt + 1':'否'}</span>`;
+      A.b.forEach((e,i)=>e.classList.toggle('hot',i==cur[1]||i==cur[2]));} else cmp.innerHTML='';
+    cc.innerHTML=`cnt = <span class="mono" style="color:#dc2626">${cnt}</span>`;op(cc,pr(t,b.f(0.3),b.f(0.3)+0.3));
+    // p2
+    op(e1,pr(t,c.f(0.2),c.f(0.2)+0.4));op(e2,pr(t,c.f(0.5),c.f(0.5)+0.4));op(e3,pr(t,c.f(0.7),c.f(0.7)+0.4));
+    // p3
+    cx.forEach((e,i)=>rise(e,t,d.f(0.05+i*0.2),0.4));rise(outb,t,d.f(0.82),0.4);
+  };
+};
+
+// ================= 純動畫版：取代講師出鏡的字卡 =================
+// card(kicker, 主標 HTML, 副標 HTML)：kicker 先出現，主標在旁白開始時放大浮現，副標在旁白講到一半時出現，講話期間有慢速推近
+function card(kicker, main, sub){
+  return ()=>{
+    const bg=el('div','abs',null);bg.style.cssText='left:0;top:0;width:1280px;height:720px;background:radial-gradient(circle at 50% 40%,#ffffff 0,#f6f4ee 70%)';
+    const wrap=el('div','abs',null);wrap.style.cssText='left:0;top:0;width:1280px;height:632px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px';
+    const k=el('div','tag',kicker,wrap);
+    const m=el('div','',main,wrap);m.style.cssText='font-size:68px;font-weight:800;text-align:center;line-height:1.25';
+    const s=el('div','',sub,wrap);s.style.cssText='font-size:34px;font-weight:600;color:#4b5563;text-align:center';
+    return t=>{
+      const a=S(0);
+      op(k,pr(t,0,0.4));
+      const p=pr(t,a.s-0.3,a.s+0.3);op(m,p);m.style.transform=`scale(${0.92+0.08*p})`;
+      rise(s,t,a.f(0.45),0.5);
+      wrap.style.transform=`scale(${1+0.03*cl((t-a.s)/(a.e-a.s+1))})`;
+    };
+  };
+}
+scenes.f1=card('CPE 考古題','UVa 10327<br><span style="color:#2563eb">Flip Sort</span>','只能交換<b style="color:#dc2626">相鄰</b>的兩個數');
+scenes.f2=card('解題關鍵','逆序對','前面的數 <b style="color:#dc2626">比後面的大</b>，就算一對');
+scenes.f3=card('結論','最少交換次數<br>＝ <span style="color:#dc2626">逆序對的數量</span>','每次相鄰交換，逆序對剛好少一個');
+scenes.f4=card('一句話記住','只能換相鄰的<br>→ 去數<span style="color:#dc2626">逆序對</span>','我們下一題見！');
+
+let render=null;
+window.setup=()=>{R.innerHTML='';render=scenes[SCENE]();};
+window.setT=(t)=>{render(t)};
+setup();
+</script></body></html>

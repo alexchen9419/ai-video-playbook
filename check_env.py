@@ -13,11 +13,11 @@ def item(level, name, detail=""):
 v = sys.version_info
 item("PASS" if v >= (3, 10) else "FAIL", "Python", f"{v.major}.{v.minor}.{v.micro}（需要 3.10+）")
 
-for mod, need in (("numpy", True), ("imageio_ffmpeg", True), ("playwright", True), ("cv2", False)):
+for mod, need in (("numpy", True), ("imageio_ffmpeg", True), ("playwright", True), ("cv2", False), ("edge_tts", False)):
     try:
         m = __import__(mod); item("PASS", mod, getattr(m, "__version__", ""))
     except ImportError:
-        item("FAIL" if need else "WARN", mod, "未安裝：pip install -r requirements.txt" + ("" if need else "（只有手機畫面合成需要）"))
+        item("FAIL" if need else "WARN", mod, "未安裝：pip install -r requirements.txt" + ("" if need else "（選用：cv2＝手機畫面合成、edge_tts＝TTS 旁白）"))
 
 try:
     import imageio_ffmpeg

@@ -1,0 +1,154 @@
+{
+ "name": "UVa10327講解_純動畫",
+ "fps": 24,
+ "size": [
+  1280,
+  720
+ ],
+ "target_seconds": 92,
+ "tolerance_seconds": 10,
+ "anim_html": "動畫/anim.html",
+ "build_dir": "build",
+ "output_dir": "成品",
+ "subtitle": {
+  "max_chars": 22,
+  "font_name": "Microsoft JhengHei",
+  "font_file": "C:/Windows/Fonts/msjhbd.ttc",
+  "font_size": 17,
+  "margin_v": 14
+ },
+ "loudnorm": "I=-16:TP=-1.5:LRA=11",
+ "tts": {
+  "voice": "zh-TW-HsiaoChenNeural",
+  "rate": "+0%"
+ },
+ "segments": [
+  {
+   "id": "f1",
+   "type": "anim",
+   "scene": "f1",
+   "lead": 0.3,
+   "gap": 0.5,
+   "tail": 0.5,
+   "lines": [
+    {
+     "wav": "語音/F1.wav",
+     "text": "大家好！今天這題叫 Flip Sort，只能交換相鄰的兩個數。"
+    }
+   ]
+  },
+  {
+   "id": "a1",
+   "type": "anim",
+   "scene": "a1",
+   "lead": 0.5,
+   "gap": 0.5,
+   "tail": 0.7,
+   "lines": [
+    {
+     "wav": "語音/A1_1.wav",
+     "text": "題目給你 N 個整數，每次只能交換相鄰的兩個數，問最少要換幾次，才能排成由小到大。"
+    },
+    {
+     "wav": "語音/A1_2.wav",
+     "text": "例如 2、3、1：先把 3 和 1 交換，再把 2 和 1 交換，總共兩次。"
+    }
+   ]
+  },
+  {
+   "id": "f2",
+   "type": "anim",
+   "scene": "f2",
+   "lead": 0.3,
+   "gap": 0.5,
+   "tail": 0.5,
+   "lines": [
+    {
+     "wav": "語音/F2.wav",
+     "text": "解題關鍵是逆序對：前面的數比後面的大，就算一對。"
+    }
+   ]
+  },
+  {
+   "id": "a2",
+   "type": "anim",
+   "scene": "a2",
+   "lead": 0.5,
+   "gap": 0.5,
+   "tail": 0.7,
+   "lines": [
+    {
+     "wav": "語音/A2_1.wav",
+     "text": "以 2、3、1 來看，2 比 1 大、3 比 1 大，總共兩個逆序對，剛好就是答案。"
+    },
+    {
+     "wav": "語音/A2_2.wav",
+     "text": "交換相鄰的兩個數時，只有它們兩個的前後關係會改變，跟其他數的位置都沒變。"
+    },
+    {
+     "wav": "語音/A2_3.wav",
+     "text": "所以每換一次，逆序對只會少一個或多一個，排好的時候是零。"
+    },
+    {
+     "wav": "語音/A2_4.wav",
+     "text": "只要還沒排好，一定找得到相鄰的前大後小，換掉它就少一個。"
+    }
+   ]
+  },
+  {
+   "id": "f3",
+   "type": "anim",
+   "scene": "f3",
+   "lead": 0.3,
+   "gap": 0.5,
+   "tail": 0.5,
+   "lines": [
+    {
+     "wav": "語音/F3.wav",
+     "text": "所以最少交換次數，就是逆序對的數量！"
+    }
+   ]
+  },
+  {
+   "id": "a3",
+   "type": "anim",
+   "scene": "a3",
+   "lead": 0.5,
+   "gap": 0.5,
+   "tail": 0.7,
+   "lines": [
+    {
+     "wav": "語音/A3_1.wav",
+     "text": "程式先一次讀完全部輸入，切成一個個數字，這樣多組測資也不怕換行。"
+    },
+    {
+     "wav": "語音/A3_2.wav",
+     "text": "每組讀進 N 個數，用雙層迴圈檢查每一對 i < j，前面比後面大就加一。",
+     "say": "每組讀進 N 個數，用雙層迴圈檢查每一對 i 小於 j，前面比後面大就加一。"
+    },
+    {
+     "wav": "語音/A3_3.wav",
+     "text": "注意要用大於，相等的數不用交換，不能算進去。"
+    },
+    {
+     "wav": "語音/A3_4.wav",
+     "text": "N 最多一千，大約五十萬次比較，雙層迴圈就能通過。"
+    }
+   ]
+  },
+  {
+   "id": "f4",
+   "type": "anim",
+   "scene": "f4",
+   "lead": 0.3,
+   "gap": 0.5,
+   "tail": 0.5,
+   "lines": [
+    {
+     "wav": "語音/F4.wav",
+     "text": "只能換相鄰的，就去數逆序對。我們下一題見！"
+    }
+   ]
+  }
+ ]
+}

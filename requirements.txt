@@ -3,3 +3,4 @@ numpy>=2.0
 imageio-ffmpeg>=0.5      # 內附 ffmpeg 執行檔，不用另外安裝 ffmpeg
 playwright>=1.40         # 動畫逐格截圖
 opencv-python>=4.8       # 只有 工具/合成/（手機畫面合成）需要
+edge-tts>=6.1            # 只有 工具/tts.py（不用 Flow 時的旁白）需要；執行時要連網
