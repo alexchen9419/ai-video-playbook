@@ -1,27 +1,139 @@
 {
  "name": "影片名稱",
  "fps": 24,
- "size": [1280, 720],
+ "size": [
+  1280,
+  720
+ ],
  "target_seconds": 120,
  "tolerance_seconds": 10,
  "anim_html": "動畫/anim.html",
  "build_dir": "build",
  "output_dir": "成品",
  "browser_channel": null,
- "subtitle": {"max_chars": 22, "font_name": "Microsoft JhengHei", "font_file": "C:/Windows/Fonts/msjhbd.ttc", "font_size": 17, "margin_v": 14},
+ "subtitle": {
+  "max_chars": 22,
+  "font_name": "Microsoft JhengHei",
+  "font_file": "C:/Windows/Fonts/msjhbd.ttc",
+  "font_size": 17,
+  "margin_v": 14
+ },
  "loudnorm": "I=-16:TP=-1.5:LRA=11",
  "segments": [
-  {"id": "F1", "type": "video", "src": "影片/F1.mp4", "text": "大家好！今天這題叫 Flip Sort，只能交換相鄰的兩個數。"},
-  {"id": "a1", "type": "anim", "scene": "a1", "lead": 0.8, "gap": 0.5, "tail": 1.0,
+  {
+   "id": "F1",
+   "type": "video",
+   "src": "影片/F1.mp4",
+   "text": "大家好！今天這題叫 Flip Sort，只能交換相鄰的兩個數。",
+   "board": {
+    "shot_size": "中景",
+    "camera": "平視、固定機位",
+    "beats": "0–1 揮手；1–7 台詞；7–8 微笑",
+    "action": "誰在哪、做什麼、**哪隻手拿什麼**",
+    "lighting": "白天自然光",
+    "tone": "親切、語速適中",
+    "sound": "環境音，無音樂",
+    "transition": "硬切",
+    "post": "**生成最容易錯的地方**",
+    "status": "未生成"
+   }
+  },
+  {
+   "id": "a1",
+   "type": "anim",
+   "scene": "a1",
+   "lead": 0.8,
+   "gap": 0.5,
+   "tail": 1.0,
    "lines": [
-    {"wav": "語音/講師_A1_1.wav", "text": "題目給你 N 個整數，每次只能交換相鄰的兩個數。"},
-    {"wav": "語音/講師_A1_2.wav", "text": "例如 2、3、1：先把 3 和 1 交換，再把 2 和 1 交換，總共兩次。"}
-   ]},
-  {"id": "F2", "type": "video", "src": "影片/F2.mp4", "text": "台詞被 Flow 唸錯時，改用配音：", "dub": "語音/講師_F2.wav", "dub_delay": 0.7},
-  {"id": "F3", "type": "video", "src": "影片/F3.mp4", "text": "說話偵測不準時手動指定區間", "speech": [0.9, 6.8]},
-  {"id": "card", "type": "clip", "src": "後製/字卡_隔天下午.mp4"},
-  {"id": "a4", "type": "anim", "renderer": "command", "command": "python 流程圖/build.py {dur} \"{cues_json}\" \"{out}\"",
-   "lines": [{"wav": "語音/講師_A4_1.wav", "text": "自訂渲染器：指令收到總長、cues、輸出路徑，產生無聲影片即可。"}]},
-  {"id": "end", "type": "clip", "src": "後製/片尾.mp4", "lines": [{"at": [0.5, 3.0], "text": "已做好的片段也能指定字幕時間"}]}
- ]
+    {
+     "wav": "語音/講師_A1_1.wav",
+     "text": "題目給你 N 個整數，每次只能交換相鄰的兩個數。",
+     "board": {
+      "visual": "第一句的畫面元素",
+      "timing": "講到哪個詞時出現／反白"
+     }
+    },
+    {
+     "wav": "語音/講師_A1_2.wav",
+     "text": "例如 2、3、1：先把 3 和 1 交換，再把 2 和 1 交換，總共兩次。"
+    }
+   ],
+   "board": {
+    "shot_size": "全畫面動畫",
+    "camera": "固定",
+    "action": "這段的版面",
+    "sound": "旁白",
+    "post": "底部 90 px 留給字幕",
+    "status": "未輸出"
+   }
+  },
+  {
+   "id": "F2",
+   "type": "video",
+   "src": "影片/F2.mp4",
+   "text": "台詞被 Flow 唸錯時，改用配音：",
+   "dub": "語音/講師_F2.wav",
+   "dub_delay": 0.7
+  },
+  {
+   "id": "F3",
+   "type": "video",
+   "src": "影片/F3.mp4",
+   "text": "說話偵測不準時手動指定區間",
+   "speech": [
+    0.9,
+    6.8
+   ]
+  },
+  {
+   "id": "card",
+   "type": "clip",
+   "src": "後製/字卡_隔天下午.mp4"
+  },
+  {
+   "id": "a4",
+   "type": "anim",
+   "renderer": "command",
+   "command": "python 流程圖/build.py {dur} \"{cues_json}\" \"{out}\"",
+   "lines": [
+    {
+     "wav": "語音/講師_A4_1.wav",
+     "text": "自訂渲染器：指令收到總長、cues、輸出路徑，產生無聲影片即可。"
+    }
+   ]
+  },
+  {
+   "id": "end",
+   "type": "clip",
+   "src": "後製/片尾.mp4",
+   "lines": [
+    {
+     "at": [
+      0.5,
+      3.0
+     ],
+     "text": "已做好的片段也能指定字幕時間"
+    }
+   ]
+  }
+ ],
+ "board": {
+  "title": "影片名稱",
+  "subtitle": "製作方式一句話",
+  "acts": [
+   {
+    "name": "一、開場",
+    "segments": [
+     "F1",
+     "a1"
+    ],
+    "time_of_day": "第一天｜傍晚",
+    "lighting": "昏暗 → 開燈暖黃",
+    "cast": "A、B",
+    "purpose": "這幕要讓觀眾理解什麼",
+    "focus": "對應的功能或知識點"
+   }
+  ]
+ }
 }

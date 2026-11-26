@@ -15,3 +15,5 @@ Thumbs.db
 desktop.ini
 # 執行紀錄
 *.log
+# Archify 工作資料夾（成品已複製到 docs/）
+.archify/

@@ -1,0 +1,56 @@
+{
+ "schema_version": 2,
+ "diagram_type": "workflow",
+ "meta": {
+  "title": "AI 影片製作總流程",
+  "locale": "zh-TW",
+  "quality_profile": "showcase",
+  "output": "docs/總流程.html",
+  "legend": {"entries": {
+   "frontend": {"label": "導演規劃"},
+   "cloud": {"label": "Google Flow（花點數）"},
+   "security": {"label": "確認與驗收"},
+   "backend": {"label": "本機工具"},
+   "database": {"label": "交付"}
+  }}
+ },
+ "lanes": [
+  {"id": "direct", "label": "導演"},
+  {"id": "flow", "label": "真人鏡頭"},
+  {"id": "assets", "label": "旁白與動畫"},
+  {"id": "output", "label": "組裝輸出"}
+ ],
+ "phases": [
+  {"id": "p-plan", "label": "01 導演", "fromCol": 0, "toCol": 1},
+  {"id": "p-make", "label": "02–03 生成與後製", "fromCol": 2, "toCol": 3, "variant": "emphasis"},
+  {"id": "p-out", "label": "04 輸出與驗收", "fromCol": 4, "toCol": 5}
+ ],
+ "mainPath": ["script", "confirm", "voice", "anim", "assemble", "qa", "deliver"],
+ "nodes": [
+  {"id": "script", "lane": "direct", "col": 0, "type": "frontend", "label": "腳本＋分鏡表", "sublabel": "project.json board", "explanation": "先問清楚用途、片長、預算、角色；分鏡欄位（景別、節拍、表演、聲音、後製）寫進 project.json，storyboard.py 產生分鏡表 PDF。"},
+  {"id": "confirm", "lane": "direct", "col": 1, "type": "security", "label": "使用者確認", "sublabel": "長度、預算、分鏡", "tag": "花點數前"},
+  {"id": "flowvideo", "lane": "flow", "col": 2, "type": "cloud", "label": "Flow 真人鏡頭", "sublabel": "角色→影格→核准→影片", "tag": "每鏡 ≤ 8 秒", "explanation": "只負責人：出鏡、表情、動作、說話。每支影片都要核准；螢幕只發光不顯示文字。"},
+  {"id": "composite", "lane": "flow", "col": 3, "type": "backend", "label": "螢幕畫面合成", "sublabel": "追蹤貼合／全螢幕插入"},
+  {"id": "voice", "lane": "assets", "col": 2, "type": "backend", "label": "旁白", "sublabel": "Flow 試聽／tts.py／錄音", "tag": "不扣點"},
+  {"id": "anim", "lane": "assets", "col": 3, "type": "backend", "label": "程式動畫", "sublabel": "make_anim.py", "explanation": "HTML 動畫依旁白長度排時間點，逐格輸出並混入旁白；文字、數字、程式碼、字卡都在這裡做。"},
+  {"id": "assemble", "lane": "output", "col": 4, "type": "backend", "label": "組裝＋字幕", "sublabel": "assemble.py"},
+  {"id": "qa", "lane": "output", "col": 5, "type": "security", "label": "驗收", "sublabel": "qa.py＋人工試聽"},
+  {"id": "deliver", "lane": "direct", "col": 5, "type": "database", "label": "交付", "sublabel": "成品＋分鏡表 PDF"}
+ ],
+ "edges": [
+  {"id": "e-script-confirm", "from": "script", "to": "confirm"},
+  {"id": "e-confirm-flow", "from": "confirm", "to": "flowvideo", "label": "有真人出鏡", "role": "branch"},
+  {"id": "e-confirm-voice", "from": "confirm", "to": "voice", "label": "旁白稿", "variant": "emphasis"},
+  {"id": "e-flow-comp", "from": "flowvideo", "to": "composite", "label": "720p 下載"},
+  {"id": "e-voice-anim", "from": "voice", "to": "anim", "label": "長度定時間點", "variant": "emphasis"},
+  {"id": "e-comp-assemble", "from": "composite", "to": "assemble", "label": "影片/"},
+  {"id": "e-anim-assemble", "from": "anim", "to": "assemble", "label": "build/", "variant": "emphasis"},
+  {"id": "e-assemble-qa", "from": "assemble", "to": "qa"},
+  {"id": "e-qa-deliver", "from": "qa", "to": "deliver", "label": "通過", "variant": "emphasis"},
+  {"id": "e-qa-anim", "from": "qa", "to": "anim", "label": "只重做壞的那段", "role": "return", "variant": "dashed"}
+ ],
+ "cards": [
+  {"dot": "cyan", "title": "分工原則", "items": ["AI 影片只負責人：出鏡、表情、說話", "文字、數字、程式碼、App 畫面、字幕一律程式產生"]},
+  {"dot": "amber", "title": "兩條路線", "items": ["Flow 路線：真人鏡頭＋動畫，影片扣點", "純動畫路線：跳過真人鏡頭，字卡取代出鏡，0 點"]}
+ ]
+}

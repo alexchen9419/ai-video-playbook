@@ -16,7 +16,7 @@
 | 5 | [04_輸出與驗收.md](04_輸出與驗收.md) | 組裝、編碼規格、自動驗收、人工試聽清單、交付 |
 | 6 | [05_純動畫路線.md](05_純動畫路線.md) | **不用 Flow**：全片程式動畫＋TTS／自己錄音，字卡取代真人出鏡 |
 | 範本 | [範本/](範本/) | 腳本範本、分鏡表範本、project.json 範本、動畫 HTML 範本 |
-| 工具 | [工具/](工具/) | `make_anim.py`、`assemble.py`、`qa.py`、`tts.py`（與模型無關的 Python 腳本）；`工具/合成/` 手機畫面合成 |
+| 工具 | [工具/](工具/) | `make_anim.py`、`assemble.py`、`qa.py`、`tts.py`、`storyboard.py`（與模型無關的 Python 腳本）；`工具/合成/` 手機畫面合成 |
 | 範例 | [範例/UVa10327/](範例/UVa10327/) | 完整專案（腳本、旁白、講師影片、動畫 HTML、project.json），可直接重建成品 |
 | 範例 | [範例/純動畫_UVa10327/](範例/純動畫_UVa10327/) | 同一題的純動畫版（不用 Flow，TTS 旁白） |
 
@@ -28,6 +28,7 @@ powershell -ExecutionPolicy Bypass -File setup.ps1     # Windows；macOS/Linux �
 python 工具/make_anim.py 範例/UVa10327/project.json    # 約 3 分鐘：輸出 3 段解說動畫
 python 工具/assemble.py  範例/UVa10327/project.json    # 組裝全片＋燒字幕
 python 工具/qa.py        範例/UVa10327/project.json    # 自動驗收
+python 工具/storyboard.py 範例/UVa10327/project.json   # 產生 分鏡表.pdf／分鏡表.md
 ```
 
 成品在 `範例/UVa10327/成品/UVa10327講解_字幕.mp4`（約 2 分 25 秒）。純動畫版把路徑換成 `範例/純動畫_UVa10327/project.json`（旁白已附；要重新產生先跑 `python 工具/tts.py ... --force`）。`check_env.py` 可隨時重新檢查環境。
@@ -35,21 +36,14 @@ git 顯示中文檔名為亂碼時：`git config core.quotepath false`。
 
 ## 總流程
 
-```
-需求 ──► 01 導演：腳本＋分鏡表＋角色設定 ──► 使用者確認（長度、預算、角色）
-                                              │
-          ┌───────────────────────────────────┴───────────────┐
-          ▼                                                   ▼
- 02 生成（Flow，花點數）                              03 後製素材（不花點數）
-  角色 → 關鍵影格 → 核准 → 影片                         旁白（Flow 語音試聽）
-          │                                           程式動畫（HTML → make_anim.py）
-          │                                           流程圖／系統畫面／字卡
-          └───────────────────────┬───────────────────────┘
-                                  ▼
-              04 組裝 assemble.py ──► 自動驗收 qa.py ──► 人工試聽 ──► 交付
-                                  ▲                          │
-                                  └────── 修正（只重做壞的那一段）◄┘
-```
+![AI 影片製作總流程](docs/總流程.svg)
+
+可互動版（點節點看說明、深淺色切換）：[docs/總流程.html](docs/總流程.html)，下載後用瀏覽器開。圖由 [Archify](https://github.com/tt-a1i/archify) 從 [docs/總流程.workflow.json](docs/總流程.workflow.json) 產生；改流程時改這個 JSON，再執行
+`node <archify>/bin/archify.mjs finalize workflow docs/總流程.workflow.json <輸出.html> --quality showcase` 與 `export-svg.mjs` 重新匯出。
+
+- **Flow 路線**：使用者確認後分兩條素材線——真人鏡頭（Flow，花點數）與旁白＋程式動畫（不花點數），最後由 `assemble.py` 組裝。
+- **純動畫路線**（05）：跳過「真人鏡頭」那一列，其餘相同。
+- 驗收不過時只重做壞掉的那一段（虛線），不要整片重生。
 
 ## 分工原則（最重要的一條）
 
