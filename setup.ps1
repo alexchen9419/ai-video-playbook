@@ -1,4 +1,4 @@
-# Windows 安裝：在 repo 根目錄執行  powershell -ExecutionPolicy Bypass -File setup.ps1
+﻿# Windows 安裝：在 repo 根目錄執行  powershell -ExecutionPolicy Bypass -File setup.ps1
 $ErrorActionPreference = "Stop"
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) { throw "找不到 python，請先安裝 Python 3.10 以上（winget install Python.Python.3.11）" }
 if (-not (Test-Path .venv)) { python -m venv .venv }
